@@ -72,7 +72,7 @@
                             <div class="row">
 
                             <h1 class="text-shadow">Forum Akademisi Indonesia</h1>
-                            <h4 class=""><em>Bagikan pemikiran ilmiah anda disini.</em> </h4>                                            
+                            <h4 class=""><em>Satukan Tekad, Ilmu dan Hati Bersama Kami</em> </h4>                                            
 
                             </div>
                             
@@ -86,19 +86,48 @@
             <!--left-->
             <div class="col-sm-3">
                 
-                        <div class="list-group">
-                            <div class="list-group-item list-group-item-success"><h4 class="text-inset-head">Category</h4></div>
-                            <?php 
-                            $category = new Category();
-                            $categories = $category->get();
-                            foreach($categories as $row){?>
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-success"><h4 class="text-inset-head">Category</h4></div>
+                    <?php 
+                    $category = new Category();
+                    $categories = $category->get();
+                    foreach($categories as $row){?>
 
-                            <a href="<?=base_url().'index.php/frontpage/frontpage/listbycategory/'.$row->id ?>" class="list-group-item text-inset"><?= $row->category_name ?></a>
+                    <a href="<?=base_url().'index.php/frontpage/frontpage/listbycategory/'.$row->id ?>" class="list-group-item text-inset"><?= $row->category_name ?></a>
 
-                            <?php } ?>    
-                        </div>
+                    <?php } ?>
+                    <a href="<?=base_url().'index.php/frontpage/frontpage/download/' ?>" class="list-group-item text-inset"> Downloads</a>
+                </div>
                     
                 <hr>
+                
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-success"><h4 class="text-inset-head">New Posts</h4></div>
+                    <?php 
+                    $article = new Article();
+                    $article->order_by('date_written', 'desc');
+                    //$articles2 = new ArrayObject();
+                    $articles2 = $article->get();
+                    $iterator = $articles2->getIterator();
+                    //print_r($iterator);
+                    for($i=1;$i<=5;$i++){
+                        if($iterator->valid()){
+                            $row = $iterator->current(); 
+                        
+                        ?>
+
+                    <a href="<?=base_url().'index.php/frontpage/detail/'.$row->id ?>" class="list-group-item text-inset">
+                        
+                        <h4 class="small text-shadow text-capitalize"><?= $row->title?></h4>
+                    
+                        <p class="small">
+                            <?php $content = substr(strip_tags($row->content), 0, 100) ; echo $content.'...'; ?></p>
+                    </a>
+                    <?php
+                        }
+                        $iterator->next();
+                    } ?>    
+                </div>
             </div>
             
             <!--center-->

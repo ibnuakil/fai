@@ -18,6 +18,7 @@ class FrontPage extends MX_Controller
             $this->load->model('User');
             $this->load->model('Category');
             $this->load->model('Article_comment');
+            $this->load->model('Sub_Category');
             $this->load->model('Comment');
             $this->load->library('form_validation');            
             $this->load->library('sessionutility');
@@ -36,6 +37,7 @@ class FrontPage extends MX_Controller
             $article = new Article();
             $base_url = base_url().'index.php/frontpage/frontpage/index';
             $offset = $this->uri->segment(4,0);
+            $article->order_by('date_written', 'desc');
             $articles = $article->get(10, $offset);
             $total_row = $article->count();
             setPagingTemplate($base_url, 3, $total_row);
@@ -49,9 +51,9 @@ class FrontPage extends MX_Controller
             $vals = array(
                 'img_path' => './assets/captcha/',
                 'img_url' => base_url() . 'assets/captcha/',
-                'font_path' => './assets/fonts/monofont.ttf',
-                'img_width' => '150',
-                'img_height' => 30,
+                'font_path' => './assets/fonts/museo_slab_500-webfont.otf',
+                'img_width' => '130',
+                'img_height' => 40,
                 'expiration' => 60
                 );
             $captcha = create_captcha($vals);
@@ -113,7 +115,7 @@ class FrontPage extends MX_Controller
                     
                     //simpan data registrasi
                     $user = new User();
-                    $user->user_id = $userid;
+                    $user->user_name = $userid;
                     $user->first_name = $firstname;
                     $user->last_name = $lastname;
                     $user->address = $address;
@@ -124,6 +126,7 @@ class FrontPage extends MX_Controller
                     $user->password = $password;
                     $user->date_registered = date('Y-m-d');
                     $user->type = 'user';
+                    //$user->save();
                     if($user->save()){
                         $view = 'success_page';
                         $data['first_name'] = $firstname;
@@ -235,7 +238,7 @@ class FrontPage extends MX_Controller
                         
                 if($article_comment->save()){
                     
-                    $this->detail($article_id);
+                    redirect(base_url().'index.php/frontpage/detail/'.$article_id);
                 }
             }else{
                 echo '<script>';
@@ -247,15 +250,21 @@ class FrontPage extends MX_Controller
         
         public function listByCategory($id)
         {
-            $view = 'home_page';
-            $article = new Article();
-            $base_url = base_url().'index.php/frontpage/frontpage/index';
-            $offset = $this->uri->segment(4,0);
-            $articles = $article->get(10, $offset);
-            $total_row = $article->count();
-            setPagingTemplate($base_url, 3, $total_row);
-            $data['articles'] = $articles;
+            $view = 'home_page2';
+            //$category = new Category();
+            //$category->get_by_id($id);
+            $subcategory = new Sub_Category();
+            $subcategory->where('category_id', $id);
+            
+            $data['subcategories'] = $subcategory->get();
             showHome($view,$data);
+        }
+        
+        public function download()
+        {
+            $view = 'download_page';                       
+            
+            showHome($view);
         }
 }
 ?>

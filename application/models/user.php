@@ -13,7 +13,7 @@ class User extends DataMapper
 {
 
 	var $validation = array(
-        'user_id' => array(
+        'user_name' => array(
             'label' => 'UserId',
             'rules' => array('required', 'trim', 'unique', 'alpha_dash', 'min_length' => 3, 'max_length' => 20),
         ),

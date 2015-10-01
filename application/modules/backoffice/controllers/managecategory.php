@@ -42,6 +42,7 @@ class ManageCategory extends MX_Controller implements IControl
 
 	public function index()
 	{
+            
 	}
 
 	public function remove()

@@ -60,8 +60,8 @@
                             ?>
                               <?=$a->state->state_name?>
                       </td>
-                      <?php $a->category->get() ?>
-                      <td><?=$a->category->category_name?></td>                      
+                      <?php $a->sub_category->get() ?>
+                      <td><?=$a->sub_category->sub_category_name?></td>                      
                       <td>
                           <a href="<?= base_url().'index.php/backoffice/managearticle/remove/'.$a->id?>" title="Delete"><i class="fa fa-trash-o"></i></a>
                           <a href="<?= base_url().'index.php/backoffice/managearticle/edit/'.$a->id?>" title="Edit"><i class="fa fa-edit"></i></a>

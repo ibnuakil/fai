@@ -21,6 +21,43 @@ tinyMCE.init({
         $("#datewritten").datepicker({
             dateFormat:"yy-mm-dd"
         });
+        
+        $('#btnuploadimage').click(function(){
+            var formData = new FormData($('#uploadimage')[0]);
+            $.ajax({
+                url: '<?php echo base_url().'index.php/backoffice/managearticle/uploadimage'?>',  //Server script to process data
+                type: 'POST',
+                xhr: function() {  // Custom XMLHttpRequest
+                    var myXhr = $.ajaxSettings.xhr();
+                    if(myXhr.upload){ // Check if upload property exists
+                        myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+                    }
+                    return myXhr;
+                },
+                //Ajax events
+                //beforeSend: beforeSendHandler,
+                success: successImage,
+                //error: errorHandler,
+                // Form data
+                data: formData,
+                //Options to tell jQuery not to process data or worry about content-type.
+                cache: false,
+                contentType: false,
+                processData: false
+            });
+        });  
+        
+        function progressHandlingFunction(e){
+            if(e.lengthComputable){
+                //$('progress').attr({value:e.loaded,max:e.total});
+                $("#loaderimage").show();
+            }
+        }
+        
+        function successImage(response,status){
+            $("#loaderimage").hide();
+            $("#onsuccessimage").html("Status :<b>"+status+'</b><br><br>Image File :<div id="msg" style="border:5px solid #CCC;padding:15px;">'+response+'</div>');
+        }
     });
 </script>
 
@@ -30,6 +67,29 @@ tinyMCE.init({
         <hr>
     </div>
     <div class="widget-content">
+        <div class="form-horizontal">
+            <form id="uploadimage" accept-charset="utf-8" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Image File</label>
+                    <div class="col-sm-10 col-lg-6">
+                        <input type="file" class="form-control" name="userfile" id="userfile"/>  
+                    </div>
+                    <div id="loaderimage" style="display:none;">
+                        <center><img src="<?php echo base_url().'assets/img/'?>load.gif" /></center>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    
+                    <div class="col-sm-10 col-lg-6">
+                        <input type="button" class="btn" id="btnuploadimage" value="Upload"/>        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div id="onsuccessimage" class=" col-sm-10 col-lg-9"></div>
+                </div>
+            </form>
+        </div>
         <form action="<?=  base_url().'index.php/backoffice/managearticle/save/'.$flaginsert?>" method="post" class="">
             <?php 
                 echo validation_errors(); 
@@ -51,6 +111,22 @@ tinyMCE.init({
                     </div>
                 </div>
                 <div class="form-group">
+                    <label for="last_name" class="col-sm-2 control-label">Category</label>
+                    <div class="col-sm-10 col-lg-6">
+                        <div class="dropdown">
+                    <?php
+                        $category = new Sub_Category();
+                        $categories = $category->get();
+                        $cat = array('pilih' => '-Pilih-');
+                        foreach ($categories as $c){
+                            $cat[$c->id] = $c->sub_category_name;
+                        }
+                        echo form_dropdown('category', $cat, null, 'class="dropdown-select"');
+                    ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
                     <label for="last_name" class="col-sm-2 control-label">Title</label>
                     <div class="col-sm-10 col-lg-6">
                         <input type="text" class="form-control" id="title" name="title" value="<?php echo set_value('title'); ?>">
@@ -62,12 +138,14 @@ tinyMCE.init({
                         <input type="text" class="form-control" id="tag" name="tag" value="<?php echo set_value('tag'); ?>">
                     </div>
                 </div>
+                
                 <div class="form-group">
                     <label for="address" class="col-sm-2 control-label">Content</label>
                     <div class="col-sm-10 col-lg-6">
                         <textarea name="content" id="content"><?php echo set_value('content'); ?></textarea>
                     </div>
-                </div>                 
+                </div>
+                
                 <div class="form-group">                    
                     <div class="col-sm-10">
                         <input type="submit" class="btn btn-default" id="save" name="save" value="Save">
@@ -91,6 +169,22 @@ tinyMCE.init({
                     <label for="first_name" class="col-sm-2 control-label">Date</label>
                     <div class="col-sm-10 col-lg-6">
                         <input type="text" id="datewritten" name="datewritten" value="<?php echo $article->date_written ?>">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="last_name" class="col-sm-2 control-label">Category</label>
+                    <div class="col-sm-10 col-lg-6">
+                        <div class="dropdown">
+                    <?php
+                        $category = new Sub_Category();
+                        $categories = $category->get();
+                        $cat = array('pilih' => '-Pilih-');
+                        foreach ($categories as $c){
+                            $cat[$c->id] = $c->sub_category_name;
+                        }
+                        echo form_dropdown('category', $cat, $article->sub_category_id, 'class="dropdown-select"');
+                    ?>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -122,6 +216,7 @@ tinyMCE.init({
                 }
             ?>
         </form>
+        
     </div>
 </div>
 
